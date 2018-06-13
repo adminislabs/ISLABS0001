@@ -26,7 +26,20 @@ public class LinkedList {
 		newNode.next=head;
 		head=newNode;
 	}
-	
+	void addPosition(){
+		Node n3=new Node(111);
+		Node current=head;
+		Node prev=null;
+		int key=3;
+		 int i = 0;
+		    while (current !=null && i < key) {
+		       prev=current;
+		       current=current.next;
+		       i++;
+		    }
+		    prev.next=n3;
+		    n3.next=current;	    
+	}
 	
 	public void addEnd(){
 		Node NewEnd=new Node(5);
