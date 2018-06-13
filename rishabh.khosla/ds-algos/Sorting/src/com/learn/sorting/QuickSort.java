@@ -5,6 +5,7 @@ public class QuickSort {
 		int pivot=arr[high];
 		int i=(low-1);
 		for(int j=low;j<high;j++){
+			// steps to suffle the array like left part is less and right is greater //
 			if(arr[j]<=pivot){
 				i++;
 				int temp=arr[i];
@@ -14,6 +15,7 @@ public class QuickSort {
 			}	
 			
 		}
+		// steps to swap the pivot //
 		int temp=arr[i+1];
 		arr[i+1]=arr[high];
 		arr[high]=temp;
