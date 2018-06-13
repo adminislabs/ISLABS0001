@@ -25,6 +25,7 @@ public class QuickSort {
 		
 		
 	}
+	// recurion to sort the parition array also
 	void sort(int arr[],int low,int high){
 		if(low<high){
 			int pi=partition(arr, low, high);
