@@ -1,14 +1,27 @@
-package Boxing;
-
-class Node 
-{ 
-	private int data;
-	private Node left,right;
-	public int getData() {
-		return data;
+/**This class defines the node of AVLtree which has variable value ,height which finds height of the particular node and left,right node 
+ *         stores the reference of left child and right child of the node.
+ *        
+ *
+ * @author pratibha
+ */
+public class Node 
+{
+     private int value;
+    private int height=1;
+    private Node left;
+    private Node right;
+    public int getHeight() {
+		return height;
 	}
-	public void setData(int data) {
-		this.data = data;
+	public void setHeight(int height) {
+		this.height = height;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+	public void setValue(int value) {
+		this.value = value;
 	}
 	public Node getLeft() {
 		return left;
@@ -22,10 +35,5 @@ class Node
 	public void setRight(Node right) {
 		this.right = right;
 	}
-	public Node(int data)
-	{
-		this.data=data;
-		left=right=null;
-	}
-
+    
 }
