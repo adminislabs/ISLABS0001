@@ -1,0 +1,25 @@
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:2:12: object joda is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.joda.time.format.DateTimeFormat[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:4:12: object joda is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.joda.time.LocalTime[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:6:12: object joda is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.joda.time.LocalDate[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:10:12: object apache is not a member of package org[0m
+[0m[[0m[31merror[0m] [0m[0mimport org.apache.spark._[0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:18:25: not found: type SparkConf[0m
+[0m[[0m[31merror[0m] [0m[0m    var sparkConf = new SparkConf().setMaster("local").setAppName("flight")[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:19:15: not found: type SparkContext[0m
+[0m[[0m[31merror[0m] [0m[0m var sc = new SparkContext(sparkConf)[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:129:21: not found: value DateTimeFormat[0m
+[0m[[0m[31merror[0m] [0m[0m  val datePattern = DateTimeFormat.forPattern("YYYY-mm-dd")[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/flight/flight/src/main/scala/Main.scala:131:21: not found: value DateTimeFormat[0m
+[0m[[0m[31merror[0m] [0m[0m  val timepattern = DateTimeFormat.forPattern("HHmm")[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m8 errors found[0m
