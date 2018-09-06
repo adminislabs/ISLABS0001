@@ -41,10 +41,10 @@ println("result")
 var final_result=pair_result.map{case (a,(b,c))=>(f"year=$a%5s","avg="+(b+c)/2)}.foreach(println)
 
 //balance
-var rd=sc.textFile("file:///home/rishab/Downloads/bank/Transaction Sample data-1.csv")
+var rd=sc.textFile("file:///home/roshni/Downloads/project/bank/Transaction Sample data-1.csv")
 var filtr1=rd.filter(x=> !x.contains("Account_id"))
 val data11=filtr1.map(parser)
-var rd1=sc.textFile("file:///home/rishab/Downloads/bank/Transaction Sample data-2.csv")
+var rd1=sc.textFile("file:///home/roshni/Downloads/project/bank/Transaction Sample data-2.csv")
 val fil1=rd1.filter(x=> !x.contains("Account_id"))
 val data22=fil1.map(parset)
 val res35=data11.union(data22)
