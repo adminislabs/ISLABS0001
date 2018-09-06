@@ -1,0 +1,7 @@
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/Documents/ooshii/emergency_CaseStudy/src/main/scala/Main.scala:13:13: sparkConf is already defined as variable sparkConf[0m
+[0m[[0m[31merror[0m] [0m[0m        var sparkConf = new SparkConf().setMaster("local").setAppName("EmergencyHelpline")[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/Documents/ooshii/emergency_CaseStudy/src/main/scala/Main.scala:14:13: sc is already defined as variable sc[0m
+[0m[[0m[31merror[0m] [0m[0m        var sc = new SparkContext(sparkConf)[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

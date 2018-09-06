@@ -1,0 +1,7 @@
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/Documents/ooshii/Movies_caseStudy/src/main/scala/Main.scala:29:43: value generes is not a member of String[0m
+[0m[[0m[31merror[0m] [0m[0marray(i)=(Generes_no(i), data.filter(x=>x.generes.contains(Generes_no(i))))[0m
+[0m[[0m[31merror[0m] [0m[0m                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/rishab/Documents/ooshii/Movies_caseStudy/src/main/scala/Main.scala:40:45: value times is not a member of Main.ratings[0m
+[0m[[0m[31merror[0m] [0m[0mval pair_year_movie=parse_rating.map(x=>((x.times),x)).groupByKey()[0m
+[0m[[0m[31merror[0m] [0m[0m                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
