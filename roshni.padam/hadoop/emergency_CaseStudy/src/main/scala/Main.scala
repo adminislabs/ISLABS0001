@@ -12,6 +12,7 @@ object Main extends App{
 
         var sparkConf = new SparkConf().setMaster("local").setAppName("EmergencyHelpline")
         var sc = new SparkContext(sparkConf)
+    //access location of file//
         var raw_Rdd=sc.textFile("file:///home/roshni/Downloads/project/EmergencyHelpline/911.csv").filter(x=> (!x.contains("lat")))
         var raw=raw_Rdd.filter{ x=>
         val removespace:Regex=(",,").r
