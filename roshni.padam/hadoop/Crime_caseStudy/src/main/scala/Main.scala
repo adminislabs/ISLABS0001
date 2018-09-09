@@ -2,19 +2,17 @@
 import org.apache.spark._
 
 import scala.util.matching.Regex
-
 object Main extends App{
-
-  override def main(arg:Array[String]) : Unit = {
-    
- var sparkConf = new SparkConf().setMaster("local").setAppName("crime")
- var sc = new SparkContext(sparkConf)
-
-  var raw_Rdd=sc.textFile("file:///home/roshni/Downloads/project/CrimeData/Crime_dataset")
+override def main(arg:Array[String]) : Unit = {
+var sparkConf = new SparkConf().setMaster("local").setAppName("crime")
+var sc = new SparkContext(sparkConf)
+  
+//access location of file
+var raw_Rdd=sc.textFile("file:///home/roshni/Downloads/project/CrimeData/Crime_dataset")
 var data = raw_Rdd.map(parse)
 
 //no of crimes under each fbi code
-var pair_fbicode=data.map(x=> ((x.fbi_Code),x.case_No)).groupByKey().collect
+var pair_Fbicode=data.map(x=> ((x.fbi_Code),x.case_No)).groupByKey().collect
 var no_Of_Cases=pair_fbicode.map{ case (key,value)=> (f"FbiCode=$key%5s"," crime_No= "+value.size)}.foreach(println)
 
 //no of theft arrests happened in district
@@ -45,7 +43,7 @@ sc.stop()
 
   case class crime(case_Id:Int,case_No:String,crime_Date:String,crime_Block:String,id_Iucr:String,primary_Type:String,descriptio:String,loc_Description:String,arrest:String,domestic:String,beat:Int,district:Int,ward:Int,community:Int,fbi_Code:String,x_Ordinates:Int,y_Ordinates:Int,year:Int,updated_On:String,lattitude:String,longitutude:String,ll_Location:String) extends Serializable{}
 
-def parse(row:String):crime={
+ def parse(row:String):crime={
  val field= row.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)",-1)
  val case_Id:Int=field(0).toInt
  val case_No =field(1)
