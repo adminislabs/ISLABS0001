@@ -10,6 +10,7 @@ object Main extends App{
 var sparkConf = new SparkConf().setMaster("local").setAppName("bank")
 var sc = new SparkContext(sparkConf)
 sc.setLogLevel("ERROR")
+    //access location of file
 var rdd=sc.textFile("file:///home/roshni/Downloads/project/bank/Transaction Sample data-1.csv")
 var filter1=rdd.filter(x=> !x.contains("Account_id"))
 val data1=filter1.map(parse1)
