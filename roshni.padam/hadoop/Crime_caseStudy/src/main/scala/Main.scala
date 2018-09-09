@@ -1,4 +1,3 @@
-
 import org.apache.spark._
 import scala.util.matching.Regex
 
@@ -6,6 +5,7 @@ object Main extends App{
 override def main(arg:Array[String]) : Unit = {
 var sparkConf = new SparkConf().setMaster("local").setAppName("crime")
 var sc = new SparkContext(sparkConf)
+sc.setLogLevel("ERROR")
   
 //access location of file
 var raw_Rdd=sc.textFile("file:///home/roshni/Downloads/project/CrimeData/Crime_dataset")
@@ -13,7 +13,7 @@ var data = raw_Rdd.map(parse)
 
 //no of crimes under each fbi code
 var pair_Fbicode=data.map(x=> ((x.fbi_Code),x.case_No)).groupByKey().collect
-var no_Of_Cases=pair_fbicode.map{ case (key,value)=> (f"FbiCode=$key%5s"," crime_No= "+value.size)}.foreach(println)
+var no_Of_Cases=pair_Fbicode.map{ case (key,value)=> (f"FbiCode=$key%5s"," crime_No= "+value.size)}.foreach(println)
 
 //no of theft arrests happened in district
 var Filter1=data.filter(x=> (x.primary_Type==("THEFT")&& x.arrest==("true")))
@@ -28,7 +28,7 @@ var crime_pair=data.map(x=> ((x.ll_Location,x.primary_Type))).groupByKey()
 
 //location under fbi code have max no of crimes
 var fbi_pair=data.map(x=> ((x.district),x.fbi_Code)).groupByKey()
-var result=fbi_pair.map{case (key,value)=> (f"district _no=$key%2s"," crime_No="+value.size)}.collect.toList
+var result=fbi_pair.map{case (key,value)=> (f"district _no=$key%2s"," crime_No="+value.size)}
 
 //printing statements
 println("no_Of_Crimes_underFbiCode")
@@ -36,7 +36,7 @@ println(no_Of_Cases)
 println("no_Of_Arrest_theft")
 println(output_size)
 println("no_Of_Cases_under_narcotics= "+narcos_cases)
-println(result.max)
+println("location crime rate is higher"+result.max)
 sc.stop()
 
 }
@@ -76,4 +76,3 @@ crime(case_Id,case_No,crime_Date,crime_Block,id_Iucr,primary_Type,descriptio,loc
 
 }
 }
-
