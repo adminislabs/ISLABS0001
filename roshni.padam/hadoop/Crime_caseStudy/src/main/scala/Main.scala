@@ -1,7 +1,7 @@
 
 import org.apache.spark._
-
 import scala.util.matching.Regex
+
 object Main extends App{
 override def main(arg:Array[String]) : Unit = {
 var sparkConf = new SparkConf().setMaster("local").setAppName("crime")
