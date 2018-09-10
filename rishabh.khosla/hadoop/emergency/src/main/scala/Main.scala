@@ -7,11 +7,9 @@ object Main extends App{
 
   override def main(arg:Array[String]) : Unit = {
     
-    var sparkConf = new SparkConf().setMaster("local").setAppName("flight")
+ var sparkConf = new SparkConf().setMaster("local").setAppName("flight")
  var sc = new SparkContext(sparkConf)
-
-
-
+    // raw rdd of the csv.file
     var rdd1=sc.textFile("file:///home/rishab/Downloads/projects/EmergencyHelpline/911.csv").filter(x=> (!x.contains("lat")))
 
         var newrdd=rdd1.filter{ x=>
@@ -32,7 +30,7 @@ object Main extends App{
 var finalstate_rdd=pair_911.join(pair1)
 var finalcity_rdd=pair_911.join(pair2)
 
-var final_state_pair1=finalstate_rdd.map{case (a,(b,c))=> (f"state=$c%10s",b)}.countByValue().foreach(println)
+var final_state_pair1=finalstate_rdd.map{case (a,(b,c))=> (f"state=$c%5s",b)}.countByValue().foreach(println)
 var final_state_pair2=finalcity_rdd.map{case (a,(b,c))=> ("city="+c,b)}.countByValue().foreach(println)
 //var final_sol1= final_state_pair1.map{case ((a,b),c) => (f"Crime=$a%6s",b,c)}
 //var final_sol2= final_state_pair2.map{case ((a,b),c) => (f"Crime=$a%8s",b,c)}
