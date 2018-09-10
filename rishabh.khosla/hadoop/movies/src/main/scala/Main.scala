@@ -15,22 +15,21 @@ val data_Rating=input_rating.map(parseRating)
 val input_movie=sc.textFile("file:///home/rishab/Downloads/projects/ml-20m/movies.csv").filter(x=> (!x.contains("movieId")))
 val data_Movie=input_movie.map(parseMovie)
     
-    
-    
-val rdd1=sc.textFile("file:///home/rishab/Downloads/projects/ml-20m/ratings.csv")
-
-var filter_rating=rdd1.filter(x=> (!x.contains("userId"))).map(parse1)
-
-// find the movies nd rating per year
-var pair_year=filter_rating.map(x=>((x.times),x)).groupByKey()
+//problems statements
+// find the no. of movies nd rating per year
 println("the no of movies per year")
-var req_output=pair_year.map{case (key,value)=>("year="+key,"movies_no="+value.size)}.foreach(println)
+var movies_Year=data_Movie.map(x=>((x.year),x.movie_Id)).groupByKey().map{case (key,value)=>("year="+key,"movies_no="+value.size)}.foreach(println)   
+println("the no of ratings per year")
+var ratings_year=data_Rating.map(x=>((x.year),x.rating)).groupByKey().map{case (key,value)=>("year="+key,"rating_no="+value.size)}.foreach(println)   
 
 // find the no of movies generes wise
-val rdd2=sc.textFile("file:///home/rishab/Downloads/projects/ml-20m/movies.csv")
-var filter_movie=rdd2.filter(x=> (!x.contains("movieId"))).map(parse2)
-var pair_genres=filter_movie.map(x=>((x.genres),x.movie_Id)).groupByKey()
-
+ val Generes_no=data_Movie.map(x=>x.generes).collect.flatten.toSet.toList
+ val array : Array[(String, org.apache.spark.rdd.RDD[movie_s])] = Array.ofDim(Generes_no.length)
+ for(a<- 0 to Generes_no.length-1){
+array(a)=(Generes_no(a), data_Movie.filter(x=>x.generes.contains(Generes_no(a))))
+}
+// movies count per generes wise 
+var moviesCount= array.map{ case (a,b) => (f"geners$a%8s",b.count)
 //average rating of  movies
 var pair_movie_id=filter_rating.map(x=> ((x.movie_Id),x.rating)).groupByKey()
 println("avg. rating of all individual movies")
@@ -66,7 +65,7 @@ def parseMovie(row:String):movie_s={
    val movie_Id=field(0).toInt
    val title=field(1)
    val generes=field(2).split('|')
-   val reqString=field(1).trim()
+   val reqString=field(1).trim
    val length=reqString.length()
    var string = reqString.substring(length - 5,length).trim
    if(reqString.charAt(length-1) == '"') string = reqString.substring(length - 6,length-1).trim
