@@ -1,16 +1,14 @@
 
 import scala.util.matching.Regex
-
 import org.apache.spark._
 
 object Main extends App{
 
   override def main(arg:Array[String]) : Unit = {
     
-    var sparkConf = new SparkConf().setMaster("local").setAppName("flight")
+ var sparkConf = new SparkConf().setMaster("local").setAppName("crimeApp")
  var sc = new SparkContext(sparkConf)
-
-
+//rdd below is taken input from csv.file crime_dataset
 var rdd=sc.textFile("file:///home/rishab/Downloads/projects/CrimeData/Crime_dataset")
 var data = rdd.map(parse)
 
@@ -36,10 +34,8 @@ var fbi_pair=data.map(x=> ((x.district),x.fbi_Code)).groupByKey()
 var size1=fbi_pair.map{case (key,value)=> ("district "+key,value.size)}
 
 }
-
+//case class and parse function of the program file
 case class crime(case_id:Int,case_No:String,crime_Date:String,crime_block:String,id_Iucr:String,primary_Type:String,descriptio:String,loc_Description:String,arrest:String,domestic:String,beat:Int,district:Int,ward:Int,community:Int,fbi_Code:String,x_ordinates:Int,y_ordinates:Int,year:Int,updated_on:String,lattitude:String,longitutude:String,ll_location:String) extends Serializable{}
-
-
 def parse(row:String):crime={
  val field= row.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)",-1)
  val case_id:Int=field(0).toInt
