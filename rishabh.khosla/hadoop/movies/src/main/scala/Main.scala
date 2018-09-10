@@ -30,18 +30,20 @@ array(a)=(Generes_no(a), data_Movie.filter(x=>x.generes.contains(Generes_no(a)))
 }
 // movies count per generes wise 
 var moviesCount= array.map{ case (a,b) => (f"geners$a%8s",b.count)
-//average rating of  movies
+                           
+//average rating of all  movies id
 var pair_movie_id=filter_rating.map(x=> ((x.movie_Id),x.rating)).groupByKey()
 println("avg. rating of all individual movies")
 var pair_movie_id_size=pair_movie_id.map{case (key,value) => ("year="+key," avg.rating"+value.reduce(_+_)/value.size)}.foreach(println)
+
 //average ratings of desired movie in each year
-val pair_year_movie=filter_rating.map(x=>((x.times),x)).groupByKey()
+val pair_year_movie=data_Movie.map(x=>((x.times),x)).groupByKey()
 val filter_movie_1=pair_year_movie.map{case (key,value)=> (key,value.filter(_.movie_Id==(1)))}
 println("avg rating of movie 1 in all years")
-val avg_movie_1=filter_movie_1.map{case(key,value)=>("year="+key,"movie  id 1 rating="+value.map(_.rating).reduce(_+_)/value.size)}.foreach(println)
+val avg_movie_1=data_Movie_1.map{case(key,value)=>("year="+key,"movie  id 1 rating="+value.map(_.rating).reduce(_+_)/value.size)}.foreach(println)
 
 //average rating per user
-var pair_userid=filter_rating.map(x=>(x.user_Id,x.rating)).groupByKey()
+var pair_userid=data_Rating.map(x=>(x.user_Id,x.rating)).groupByKey()
 var avg_user_rating=pair_userid.map{case (key,value)=>("User="+key," avg.rating="+value.reduce(_+_)/value.size)}.foreach(println)
 
 sc.stop()
