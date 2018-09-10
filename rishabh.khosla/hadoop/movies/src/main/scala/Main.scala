@@ -7,9 +7,16 @@ object Main extends App{
 
   override def main(arg:Array[String]) : Unit = {
     
-    var sparkConf = new SparkConf().setMaster("local").setAppName("movies")
+ var sparkConf = new SparkConf().setMaster("local").setAppName("movies")
  var sc = new SparkContext(sparkConf)
 sc.setLogLevel("ERROR")
+val input_rating=sc.textFile("file:///home/rishab/Downloads/projects/ml-20m/ratings.csv").filter(x =>(!x.contains("movieId")))
+val data_Rating=input_rating.map(parseRating)
+val input_movie=sc.textFile("file:///home/rishab/Downloads/projects/ml-20m/movies.csv").filter(x=> (!x.contains("movieId")))
+val data_Movie=input_movie.map(parseMovie)
+    
+    
+    
 val rdd1=sc.textFile("file:///home/rishab/Downloads/projects/ml-20m/ratings.csv")
 
 var filter_rating=rdd1.filter(x=> (!x.contains("userId"))).map(parse1)
@@ -41,21 +48,20 @@ var avg_user_rating=pair_userid.map{case (key,value)=>("User="+key," avg.rating=
 sc.stop()
 }
 //parse function of rating dataset
-case class rating_s(user_Id:Int,movie_Id:Int,rating:Double,times:String) extends Serializable{}
-def parse1(row:String):rating_s={
+case class rating_s(user_Id:Int,movie_Id:Int,rating:Double,year:String) extends Serializable{}
+def parseRating(row:String):rating_s={
     val field=row.split(",")
     val user_Id=field(0).toInt
     val movie_Id=field(1).toInt
     val rating=field(2).toDouble
     val df:SimpleDateFormat=new SimpleDateFormat("yyyy")
-    val times=df.format((field(3)+"000").toLong)
-    
-    rating_s(user_Id,movie_Id,rating,times)
+    val year=df.format((field(3)+"000").toLong)
+    rating_s(user_Id,movie_Id,rating,year)
 }
 
 // parse function of movie dataset
-case class movie(movie_Id:Int,title:String,generes:Array[String],year:String) extends Serializable{}
-def parseMovie(row:String):movie={
+case class movie_s(movie_Id:Int,title:String,generes:Array[String],year:String) extends Serializable{}
+def parseMovie(row:String):movie_s={
    val field=row.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")
    val movie_Id=field(0).toInt
    val title=field(1)
@@ -65,6 +71,6 @@ def parseMovie(row:String):movie={
    var string = reqString.substring(length - 5,length).trim
    if(reqString.charAt(length-1) == '"') string = reqString.substring(length - 6,length-1).trim
    val year=string.substring(0,string.length-1)
-   movie(movie_Id,title,generes,year)
+   movie_s(movie_Id,title,generes,year)
 }
 }
