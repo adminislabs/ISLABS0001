@@ -1,11 +1,10 @@
-
+@author Rishab
 import org.apache.spark._ 
 
 object Main extends App{
-
   override def main(arg:Array[String]) : Unit = {
     
-  var sparkConf = new SparkConf().setMaster("local").setAppName("bank")
+ var sparkConf = new SparkConf().setMaster("local").setAppName("bank")
  var sc = new SparkContext(sparkConf)
 sc.setLogLevel("ERROR")
 var rdd=sc.textFile("file:///home/rishab/Downloads/bank/Transaction Sample data-1.csv")
@@ -41,43 +40,13 @@ var req_average=sum_of_systems/total_system_transactions
 
 var key_size=group_time_key.map{ case (key,value)=> (key,value.size)}.collect.toList
 
-
-
 //here i find out the year wise amount avg.
-
 var pair_year1=data1.map(x=>((x.transaction_time),x.amount)).groupByKey()
 var pair_year2=data2.map(x=>((x.transaction_time),x.amount)).groupByKey()
 var result_year1=pair_year1.map{case (key,value)=> (key,value.sum/value.size)}
- var result_year2=pair_year2.map{case (key,value)=> (key,value.sum/value.size)}
- var pair_result=result_year1.join(result_year2)
- var final_result=pair_result.map{case (a,(b,c))=>("year="+a," average="+(b+c)/2)}.foreach(println)
-
- // calucate balance 
-
- //var credit_data1=data1.filter(x=>x.transaction_type=="C")
-  //var debit_data1=data1.filter(x=>x.transaction_type=="D")
-  //var credit_data2=data2.filter(x=>x.transaction_type=="C")
-  //var debit_data2=data2.filter(x=>x.transaction_type=="D")
-
-  //var pair_acc_credit1=credit_data1.map(x=>((x.account_Id),x.amount)).groupByKey()
-  //var pair_acc_debit1=debit_data1.map(x=>((x.account_Id),x.amount)).groupByKey()
-
-  //var result1=pair_acc_credit1.zip(pair_acc_debit1)
-
-//calucate 
-var credit1rdd = data1.map(x => (x.account_Id,x)).groupByKey().map{case (a,b) => (a,b.filter(_.transaction_type == 'C').map(_.amount))}
-var sum_C1 = credit1rdd.map(x => (x._1,x._2.sum))
-var credit11rdd = data2.map(x => (x.account_Id,x)).groupByKey().map{case (a,b) => (a,b.filter(_.transaction_type == 'C').map(_.amount))}
-var sum_C2 = credit11rdd.map(x => (x._1,x._2.sum))
-var aaa = sum_C1.zip(sum_C2).map{case ((a,b),(c,d)) => (a,b+d)}
-
-var debit2rdd = data1.map(x => (x.account_Id,x)).groupByKey().map{case (a,b) => (a,b.filter(_.transaction_type == 'D').map(_.amount))}
-var sum_D1 = debit2rdd.map(x => (x._1,x._2.sum))
-var debit22rdd = data2.map(x => (x.account_Id,x)).groupByKey().map{case (a,b) => (a,b.filter(_.transaction_type == 'D').map(_.amount))}
-var sum_D2 = debit22rdd.map(x => (x._1,x._2.sum))
-var bbb = sum_D1.zip(sum_D2).map{case ((a,b),(c,d)) => (a,b+d)}
-var balance = aaa.zip(bbb).map{case ((a,b),(c,d)) => (a, b-d)}
-var balanceRdd = balance.map{case (a,b) => (f"Account_Id = $a%10s", f"Balance = $b%8s")}
+var result_year2=pair_year2.map{case (key,value)=> (key,value.sum/value.size)}
+var pair_result=result_year1.join(result_year2)
+var final_result=pair_result.map{case (a,(b,c))=>("year="+a," average="+(b+c)/2)}.foreach(println)
 
 sc.stop()
 }
