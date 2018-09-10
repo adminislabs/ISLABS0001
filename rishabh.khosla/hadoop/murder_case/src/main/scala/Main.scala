@@ -23,16 +23,15 @@ var nar_cases=data.filter(x=> (x.primary_Type==("NARCOTICS"))).count()
 //no of theft arrests happened in each district
 var req=data.filter(x=> (x.primary_Type==("THEFT")&& x.arrest==("true")))
 var req_pair=req.map(x=> ((x.district),x.primary_Type)).groupByKey()
-var req_size=req_pair.map{case(key,value)=>(key,value.size)}
-
+var req_size=req_pair.map{case(key,value)=>(f"District=$key%3s"," Theft_arrest="+value.size)}.foreach(println)
 //on which location crime rate is higher
 var crime_pair=data.map(x=> ((x.ll_location,x.primary_Type))).groupByKey()
 
-
 //location under fbi code have max no of crimes
 var fbi_pair=data.map(x=> ((x.district),x.fbi_Code)).groupByKey()
-var size1=fbi_pair.map{case (key,value)=> ("district "+key,value.size)}
-
+var size1=fbi_pair.map{case (key,value)=> (key,value.size)}.map(a=>a.swap).collect.toList
+println("the district and no of crimes are ")
+var re=size1.sorted.reverse.take(1).foreach(println)
 }
 //case class and parse function of the program file
 case class crime(case_id:Int,case_No:String,crime_Date:String,crime_block:String,id_Iucr:String,primary_Type:String,descriptio:String,loc_Description:String,arrest:String,domestic:String,beat:Int,district:Int,ward:Int,community:Int,fbi_Code:String,x_ordinates:Int,y_ordinates:Int,year:Int,updated_on:String,lattitude:String,longitutude:String,ll_location:String) extends Serializable{}
