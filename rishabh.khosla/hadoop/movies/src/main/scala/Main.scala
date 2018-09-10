@@ -54,13 +54,17 @@ def parse1(row:String):rating_s={
 }
 
 // parse function of movie dataset
-case class movie (movie_Id:Int , title:String,genres:String)
- def parse2(row :String) :movie={
-   var fields = row.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)
-   var movie_Id = fields(0).toInt
-   var title =  fields(1).replace('"', ' ').trim().replaceAll(" ", "")
-   var genres = fields(2).replace('"', ' ').trim().replaceAll(" ", "")
-   movie(movie_Id,title,genres)
- }
-
+case class movie(movie_Id:Int,title:String,generes:Array[String],year:String) extends Serializable{}
+def parseMovie(row:String):movie={
+   val field=row.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")
+   val movie_Id=field(0).toInt
+   val title=field(1)
+   val generes=field(2).split('|')
+   val reqString=field(1).trim()
+   val length=reqString.length()
+   var string = reqString.substring(length - 5,length).trim
+   if(reqString.charAt(length-1) == '"') string = reqString.substring(length - 6,length-1).trim
+   val year=string.substring(0,string.length-1)
+   movie(movie_Id,title,generes,year)
+}
 }
