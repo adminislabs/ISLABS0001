@@ -1,0 +1,124 @@
+import org.apache.spark._
+object Transcation{
+	def main(args:Array[String]):Unit={
+	var sparkConf=new SparkConf()
+	var sc=new SparkContext(sparkConf)
+     //Path for the file
+	var firstTranscationRdd=sc.textFile("File:///home/pratibha/Downloads/Transaction Sample data-1.csv")
+     //Path for the file
+	var secondTranscationRdd=sc.textFile("File:///home/pratibha/Downloads/Transaction Sample data-2.csv")
+
+	var filterTranscationRdd=firstTranscationRdd.filter(x=> !x.contains("Account_id"))
+     //filterTranscationRdd.take(20)
+     var filtersecondTranscationRdd=secondTranscationRdd.filter(x=> !x.contains("Account_id"))
+    //filtersecondTranscationRdd.take(20)
+     var thirdTranscationRdd=filterTranscationRdd.map(x=>x.replace("$","").trim())
+     var secondTranscationRdd=filterTranscationRdd.map(x=> x.replace("$","").trim())
+     var parseTranscationRdd=secondTranscationRdd.map(parse)
+     var parsesecondTranscationRdd=thirdTranscationRdd.map(parse2)
+
+     //Rdd containing only data related to credit from 1st file
+     var credittranscationRdd=parseTranscationRdd.filter(x=>x.Creditdebit =="C")
+     //Rdd containing only data related to debit from 1st file
+     var debittranscationRdd=parseTranscationRdd.filter(x=>x.Creditdebit =="D")
+     //Rdd containing only data related to credit from 2nd file
+     var secondcredittranscationRdd=parseTranscationRdd.filter(x=>x.Creditdebit =="C")
+     //Rdd containing only data related to debit from 2nd file
+     var seconddebittranscationRdd=parseTranscationRdd.filter(x=>x.Creditdebit == "D")
+     
+     //Average amount for all credits(1)
+     var creditRdd=credittranscationRdd.map(x=>(x.Creditdebit,x.Amount)).groupByKey()
+     var finalRdd=creditRdd.map{case (k,v)=>(k,v.reduce(_+_)/v.size)}
+      var averagecreditRdd=finalRdd.map{case (a,b) => (f"Creditdebit=$a%s",f"Average=$b%s")}
+
+     //Average amount for all debits(2)
+     var debitRdd=debittranscationRdd.map(x=>(x.Creditdebit,x.Amount)).groupByKey()
+     var finaldebitRdd=debitRdd.map{case (k,v)=>(k,v.reduce(_+_)/v.size)}
+     var averagedebitRdd=finaldebitRdd.map{case (a,b) => (f "Creditdebit=$a%s",f"Average=$b%s")}
+
+     //2-file
+     var secondRdd=secondcredittranscationRdd.map(x=>(x.account_id,x.Amount)).groupByKey()
+     var pairsecondRdd=secondRdd.map{case(k,v)=>(k,v.reduce(_+_))}//credit
+     var seconddebitpairRdd=seconddebittranscationRdd.map(x=>(x.account_id,x.Amount)).groupByKey()
+     var totaldebitRdd=seconddebitpairRdd.map{case(k,v)=>(k,v.reduce(_+_))}//debit
+     
+     //Average transcation amount per year for credit
+     var transcationRdd=credittranscationRdd.map(x=>(x.TimeStamp,x.Amount)).groupByKey()
+     var transcationyearwiseRdd=transcationRdd.map{case (k,v)=>(k,v.reduce(_+_)/v.size)}
+     var output_Rdd=transcationyearwiseRdd.map{case(a,b)=>(f"Year=$a%s",f"Average=$b%s")}
+
+     //Average transcation amount per year for debit
+     var debityearRdd=debittranscationRdd.map(x=>(x.TimeStamp,x.Amount)).groupByKey()
+     var transcationyeardebit=debityearRdd.map{case (k,v)=>(k,v.reduce(_+_)/v.size)}
+     var finaloutput_Rdd=transcationyeardebit.map{case(a,b)=>(f "year=$a%s",f "Average=$b%s")}
+     
+     //Find account_id whose balance amount is highest in both the files
+     //var Rdd=credittranscationRdd.map(x=>(x.account_id,x.Amount)).groupByKey()
+     //var pairRdd=Rdd.map{case(k,v)=>(k,v.reduce(_+_)}//credit
+     //var debitpairRdd=debittranscationRdd.map(x=>(x.account_id,x.Amount)).groupByKey()
+     //var totaldebitRdd=debitpairRdd.map{case (k,v)=>(k,v.reduce(_+_))}//debit
+     //Total
+     //var totalcreditRdd=pairsecondRdd.join(pairRdd).map{case (a,(b,c))=>(a,b+c)}
+     //var totaldebitRdd2=totaldebitRdd.join(totaldebitRdd).map{case (a,(b,c))=>(a,b+c)}
+
+     //Balance=Credit-debit
+     //var balance =totalcreditRdd.join(totaldebitRdd2).map{case(a,b),(c,d)=>(a,b-d)}
+
+     var creditdata1 = parseTranscationRdd.map(x => (x.account_id, x)).groupByKey().map { case (a, b) => (a, b.filter(_.Creditdebit == "C".map(_.Amount)) }
+     var creditdata2=creditdata1.map{case (a,b)=>(a,b.filter(_.Creditdebit == "C").map(_.Amount)) } //1st file
+     var sum1Rdd=creditdata2.map(x=>(x._1,x._2.sum))
+     var credit2=parsesecondTranscationRdd.map(x=>(x.account_id,x)).groupByKey()//2nd file
+     var creditRdd2=credit2.map{case (a,b)=>(a,b.filter(_.Creditdebit =="C").map(_.Amount))}
+     var sum2Rdd=creditRdd2.map(x=> (x._1,x._2.sum))
+     var finalcreditRdd=sum1Rdd.zip(sum2Rdd).map{case ((a,b),(c,d))=>(a,b+d)}
+     var debitRdd=parseTranscationRdd.map(x=>(x.account_id,x)).groupByKey()
+     var debitRdd2=debitRdd.map{case (a,b)=>(a,b.filter(_.Creditdebit == "D").map(_.Amount)) }
+     var sumdebit=debitRdd2.map(x=>(x._1,x._2.sum))
+     var debitdata=parsesecondTranscationRdd.map(x=>(x.account_id,x)).groupByKey()
+     var debitdata2=debitdata.map{case (a,b)=>(a,b.filter(_.Creditdebit =="D").map(_.Amount))}
+     var sumdebit2=debitdata2.map(x=>(x._1,x._2.sum))
+     var finaldebitRdd=sumdebit.zip(sumdebit2).map{case ((a,b),(c,d))=>(a,b+d)}
+
+     //Balance
+     var balance=finalcreditRdd.zip(finaldebitRdd).map{case ((a,b) ,(c,d))=>(a,b-d)}
+
+     //To find highest balance
+     var k = balance.map(x => x._2)
+     var result = k.max()
+     var a = balance.filter(x => x._2 == result)
+     println("Maximum"=+a)
+     var balanceRdd=balance.map{case (a,b) =>(f "Account_id=$a%s", f "Balance =$b%s")}
+    
+    //2nd way to find maximum value for the balance
+    var maxKey2 = balance.max()(new Ordering[Tuple2[Int, Int]]() {
+    override def compare(x: (Int, Int), y: (Int, Int)): Int = 
+      Ordering[Int].compare(x._2, y._2)
+     })var k = balance.filter(x => (x._2 == x._2.max))
+}
+
+//Case Class for 1st file
+case class Transcation(account_id:Int,Name:String,TimeStamp:String,Creditdebit:String,Amount:Int)
+//Parse Function
+def parse(row:String):Transcation={
+	val field=row.split(",")
+	val account_id:Int=field(0).toInt
+	val Name:String=field(1) 
+	val TimeStamp:String=field(2).substring((field(2).length-4))
+	val Creditdebit:String=field(3)
+	val Amount:Int=field(4).toInt
+	Transcation(account_id,Name,TimeStamp,Creditdebit,Amount)
+}
+//Case class for 2nd file
+case class Transcation2(account_id:Int,Name:String,TimeStamp:String,Creditdebit:String,Amount:Int)
+//Parse Function
+def parse2(row:String):Transcation2={
+	val field=row.split(",")
+	val account_id:Int=field(0).toInt
+	val Name:String=field(1)
+	val TimeStamp:String=field(2).substring((field(2).length-4))
+	val Creditdebit:String=field(3)
+	val Amount:Int=field(4).toInt
+	Transcation2(account_id,Name,TimeStamp,Creditdebit,Amount)
+
+}
+}
