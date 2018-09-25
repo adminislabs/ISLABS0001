@@ -1,0 +1,78 @@
+import org.apache.spark._
+import java.text.SimpleDateFormat
+import java.util.Date
+object MovieExample{
+	def main(args:Array[String]):Unit={
+	var sparkConf=new SparkConf()
+	var sc=new SparkContext(sparkConf)
+
+    //Path for the dataset
+	var firstmovieRdd=sc.textFile("File:///home/pratibha/Downloads/ml-20m(1)/Movies/movies.csv")
+	var finalmovieRdd=firstmovieRdd.filter(x=> !x.contains("movieId"))
+    
+	finalmovieRdd.take(1008907).foreach(println)
+    var parsemovieRdd=finalmovieRdd.map(parse)
+    var filtermovieRdd=sc.parallelize(finalmovieRdd.take(10500))
+    var filtermoviedata=filtermovieRdd.map(parse)
+    var pairRdd=filtermoviedata.map(Movie=>(Movie.movieyear,Movie.titleofthemovie))
+    pairRdd.collect()
+    var groupRdd=pairRdd.groupByKey()
+    var filtermovieRdd=groupRdd.map{case (key,value)=>((key),value.size)}
+
+     //Finding no of movies per genres
+    var pairgenresRdd=filtermoviedata.map(Movie=>(Movie.genres,Movie.movieid))
+    var pairgenresRdd=filtermoviedata.map(Movie=>(Movie.genres,Movie.movieid)).groupByKey()
+    var group_genres=pairgenresRdd.map{case(key,value)=>((key),value.size)}
+
+    //Path for the dataset
+    var ratingRdd=sc.textFile("File:///home/pratibha/Downloads/ml-20m(1)/Movies/ratings.csv")
+    var ratingfilterRdd=ratingRdd.filter(x=> !x.contains("userId")).map(parse)
+    ratingfilterRdd.take(20)
+    
+    //Find the movies and genres per year
+    var pairyearRdd=ratingfilterRdd.map(Rating=>((Rating.times),Rating)).groupByKey()
+    var moviesandgenresperyear=pairyearRdd.map{case (key,value)=>(key,value.size)}
+    pairyearRdd.take(10).foreach(println)
+    
+    //Average Rating of the desired movies in each year
+    var pairyearRdd=ratingfilterRdd.map(Rating=>((Rating.times,Rating)).groupByKey()
+    val filtermovieyearRdd=pairyearRdd.map{case (key,value)=> (key,value.filter(_.movieId==(1)))}
+    val averageyearRdd=filtermovieyearRdd.map{case(key,value)=>(key,value.map(_.rating).reduce(_+_)/value.size)}
+
+    //Finding average rating per user
+    var pairuseridRdd=ratingfilterRdd.map(Rating=>(Rating.userId,Rating.rating))
+    var pairuseridRdd=ratingfilterRdd.map(Rating=>(Rating.userId,Rating.rating)).groupByKey()
+    var averageguserratingRdd=pairuseridRdd.map{case (key,value)=>(key,value.reduce(_+_)/value.size)}
+
+    //Average rating of each individual movies
+     var pairRdd=ratingfilterRdd.map(Rating=>((Rating.movieId,Rating.rating)).groupByKey()
+    var pairmovieRdd=pairRdd.map{case(key,value)=>(key,value.reduce(+)/value.size)}
+   }
+
+//Case Class
+case class Movie(movieid:Int,titleofthemovie:String,genres:String,movieyear:String)
+
+//Parse Function
+def parse(row:String):Movie={
+ val date=raw"((\d{4}))".r
+ val fields=row.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")
+ val movieid=fields(0).toInt
+ val titleofthemovie:String=fields(1)//subString((fields(1).length-5))//.split('(')(0)
+ val genres:String=fields(2)
+ val movieyear:String=date.findFirstMatchIn(fields(1)).get.toString
+ Movie(movieid,titleofthemovie,genres,movieyear)
+ }
+
+//Case Class
+ case class Rating(userId:Int,movieId:Int,rating:Double,times:String)
+
+ //Parse Function
+ def parse(row:String):Rating={
+ val field=row.split(",")
+ val userId=field(0).toInt
+ val movieId=field(1).toInt
+ val rating=field(2).toDouble
+ val df:SimpleDateFormat=new SimpleDateFormat("yyyy")
+ val times=df.format(field(3).toLong)
+ Rating(userId,movieId,rating,times)
+ }
